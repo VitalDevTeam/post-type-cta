@@ -58,7 +58,7 @@ class VTL_Post_Type_CTA {
 
 	public function __construct() {
 
-		$this->post_type_name = 'bp_cta';
+		$this->post_type_name = 'vtl_cta';
 		$this->post_type_base = 'cta';
 		$this->post_type_singular = 'CTA';
 		$this->post_type_plural = 'CTAs';
@@ -83,7 +83,6 @@ class VTL_Post_Type_CTA {
 	function activate() {
 		$this->register_post_type();
 		$this->register_cta_style_taxonomy();
-		$this->register_cta_style_terms();
 	}
 
 	/**
@@ -157,7 +156,7 @@ class VTL_Post_Type_CTA {
 				'pages'      => false,
 				'ep_mask'    => EP_PERMALINK,
 			],
-			'can_export'            => false,
+			'can_export'            => true,
 			'delete_with_user'      => false,
 		]);
 	}
@@ -218,9 +217,9 @@ class VTL_Post_Type_CTA {
 				'meta_box_cb'           => null,
 				'meta_box_sanitize_cb'  => null,
 				'capabilities'          => [
-					'manage_terms' => false,
-					'edit_terms'   => false,
-					'delete_terms' => false,
+					'manage_terms' => 'manage_categories',
+					'edit_terms'   => 'manage_categories',
+					'delete_terms' => 'manage_categories',
 					'assign_terms' => 'edit_posts',
 				],
 				'rewrite'               => [
@@ -231,38 +230,6 @@ class VTL_Post_Type_CTA {
 				],
 			]
 		);
-	}
-
-	/**
-	 * Inserts CTA style terms into the database.
-	 * Runs only on plugin activation for performance reasons. Disable/enable plugin after editing terms.
-	 *
-	 * @since 3.0.0
-	 * @return void
-	 */
-	public function register_cta_style_terms() {
-
-		$taxonomy = 'cta_style';
-
-		$terms = [
-			// [
-			// 	'term' => 'Example',
-			// 	'slug' => 'example',
-			// ],
-		];
-
-		foreach ($terms as $term) {
-
-			if (!term_exists($term['term'], $taxonomy)) {
-				wp_insert_term(
-					$term['term'],
-					$taxonomy,
-					[
-						'slug' => $term['slug'],
-					]
-				);
-			}
-		}
 	}
 
 	/**
@@ -288,7 +255,7 @@ class VTL_Post_Type_CTA {
 	 * @return void
 	 */
 	public function taxonomy_radio() {
-		$custom_tax_mb = new VTL_Taxonomy_Radio('cta_style', ['bp_cta']);
+		$custom_tax_mb = new VTL_Taxonomy_Radio('cta_style', ['vtl_cta']);
 		$custom_tax_mb->metabox_title = 'CTA Styles';
 		$custom_tax_mb->force_selection = true;
 	}
